@@ -1,7 +1,9 @@
 #  灵遨科技 - 移动机器人 ROS 软件包
 
 该存储库是灵遨ROS机器人最小软件包集  
-当前版本协议：V2.2.0
+
+当前版本协议：V2.1.0  
+**注意**：该版本协议支持灵遨V2.1.0及以下协议
 
 ## ROS Packages
 * lingao_base: 灵遨底盘驱动软件包，用于ROS的底盘通讯收发
@@ -27,7 +29,7 @@
     $ mkdir -p ~/lingao_ws/src/
     $ cd ~/lingao_ws/src/
     $ catkin_init_workspace
-    $ git clone https://e.coding.net/keaa/lingaoros/lingao_ros.git
+    $ git clone -b 2.1.0 https://e.coding.net/keaa/lingaoros/lingao_ros.git
     $ catkin_make
     ```
 
