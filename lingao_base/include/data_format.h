@@ -7,7 +7,7 @@
 
 #define HEAD_FLAG1 0xFE
 #define HEAD_FLAG2 0xEF
-#define LA_PROTOCOL_VERSION 22
+#define LA_PROTOCOL_VERSION 21
 
 
 class FormatTools
@@ -102,11 +102,7 @@ struct Data_Format_Liner
 //IMU数据结构体
 struct Data_Format_IMU
 {
-    float pitch;
-    float yaw;
-    float roll;
-
-    float accx; 
+    float accx;    //IMU 加速度
     float accy;
     float accz;
 
@@ -116,22 +112,20 @@ struct Data_Format_IMU
 
     void EndianSwapSet(const void *src)
     {
-        FormatTools::EndianSwap(this, src, sizeof(pitch), sizeof(Data_Format_IMU));
+        FormatTools::EndianSwap(this, src, sizeof(accx), sizeof(Data_Format_IMU));
     }
 };
 
 //电池数据结构体
 struct Data_Format_BAT
 {
-    int16_t voltage;    //电压 10mv
-    int16_t current;    //电流 10mv
-    int16_t temperature;    //电流 10mv
-    unsigned char percentage;  //电量百分比
+    int16_t bat_voltage;    //电压 mv
+    unsigned char bat_percentage;  //电量百分比
 
     void EndianSwapSet(const void *src)
     {
-        FormatTools::EndianSwap(this, src, sizeof(voltage), sizeof(Data_Format_BAT));
-        percentage = *((char *)src + sizeof(voltage)*3);
+        FormatTools::EndianSwap(this, src, sizeof(bat_voltage), sizeof(Data_Format_BAT));
+        bat_percentage = *((char *)src + sizeof(bat_voltage));
     }
 };
 

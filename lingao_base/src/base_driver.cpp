@@ -209,10 +209,8 @@ void Base_Driver::base_Loop()
             //成功读取后数据处理
             rxData_battery      = stream->get_data_battery();
             bat_msg.header.stamp = ros::Time::now();
-            bat_msg.voltage     = rxData_battery.voltage / 100.0;
-            bat_msg.current     = rxData_battery.current / 100.0;
-            bat_msg.percentage  = rxData_battery.percentage;
-            bat_msg.temperature = rxData_battery.temperature;
+            bat_msg.voltage     = rxData_battery.bat_voltage / 1000.0;
+            bat_msg.percentage  = rxData_battery.bat_percentage;
 
             pub_bat_.publish(bat_msg);
         }
@@ -341,10 +339,6 @@ void Base_Driver::publish_imu()
     imu_msg.angular_velocity.x = imu_data.angx;
     imu_msg.angular_velocity.y = imu_data.angy;
     imu_msg.angular_velocity.z = imu_data.angz;
-
-    tf2::Quaternion goal_quat;
-    goal_quat.setRPY(imu_data.roll, imu_data.pitch, imu_data.yaw);
-    imu_msg.orientation = tf2::toMsg(goal_quat);
 
     pub_imu_.publish(imu_msg);
 }
