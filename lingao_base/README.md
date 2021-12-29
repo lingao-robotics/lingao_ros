@@ -31,6 +31,9 @@ roslaunch lingao_base lingao_base_driver.launch
 /lingao_base_driver/battery_state (lingao_msgs/LingAoBmsStatus)
 - 电池电压和电量状态
 
+/lingao_base_driver/rc_state (lingao_msgs/LingAoRCStatus)
+- 反馈遥控数据（包括遥杆、开关、旋钮数据）
+
 ## 订阅的话题
 /cmd_vel (geometry_msgs/Twist)
 - 控制机器人平移线速度(单位:m/s)和旋转角速度(单位:rad/s)

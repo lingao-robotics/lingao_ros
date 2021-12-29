@@ -67,7 +67,7 @@ Base_Driver::Base_Driver() : nh_("~")
 void Base_Driver::InitParams()
 {
     // Serial Port Params
-    nh_.param("port_name", serial_port_, std::string("/dev/ttyUSB0"));
+    nh_.param("port_name", serial_port_, std::string("/dev/lingao"));
     nh_.param("port_baud", serial_baud_rate, 230400);
     nh_.param("freq", loop_rate_, 100);
 
