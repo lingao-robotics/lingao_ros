@@ -48,6 +48,7 @@ class Data_Stream {
     Data_Format_Liner rxData_liner;
     Data_Format_IMU rxDdata_imu;
     Data_Format_BAT rxData_battery;
+    Data_Format_RC rxData_rc;
 
     std::mutex m;
     std::condition_variable cv;
@@ -84,6 +85,12 @@ class Data_Stream {
     {
         std::lock_guard<std::mutex> lock(getData_mutex_);
         return lingao_version;
+    }
+
+    Data_Format_RC get_data_rc()
+    {
+        std::lock_guard<std::mutex> lock(getData_mutex_);
+        return rxData_rc;
     }
 };
 

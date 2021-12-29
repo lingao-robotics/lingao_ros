@@ -1,8 +1,9 @@
 # Lingao_bringup 灵遨科技ROS底层通讯驱动
 
- **Copyright (c) 2020 LingAo Robot**
+ **Copyright (c) 2021 LingAo Robot**
 
-当前版本协议：V2.2.0
+当前版本协议：V3.1.0
+**注意 :**当前版本为遥控协议定制版本
 
  **NOTE:**  
 * 驱动使用私有通讯协议

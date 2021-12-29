@@ -50,7 +50,9 @@ Base_Driver::Base_Driver() : nh_("~")
 
     init_odom();
     init_imu();
-    init_sensor_msg();
+    
+    pub_rc_ = nh_.advertise<lingao_msgs::LingAoRCStatus>("rc_state", 10);
+    pub_bat_ = nh_.advertise<lingao_msgs::LingAoBmsStatus>("battery_state", 1);
 
     x_pos_ = 0;
     y_pos_ = 0;
@@ -65,7 +67,7 @@ Base_Driver::Base_Driver() : nh_("~")
 void Base_Driver::InitParams()
 {
     // Serial Port Params
-    nh_.param("port_name", serial_port_, std::string("/dev/lingao"));
+    nh_.param("port_name", serial_port_, std::string("/dev/ttyUSB0"));
     nh_.param("port_baud", serial_baud_rate, 230400);
     nh_.param("freq", loop_rate_, 100);
 
@@ -109,15 +111,13 @@ void Base_Driver::init_imu()
     }
 }
 
-void Base_Driver::init_sensor_msg() { pub_bat_ = nh_.advertise<lingao_msgs::LingAoBmsStatus>("battery_state", 50); }
-
 void Base_Driver::init_odom()
 {
     ROS_INFO_STREAM("advertise to the odom topic on [" << publish_odom_name_ << "]");
-    pub_odom_ = nh_.advertise<nav_msgs::Odometry>(publish_odom_name_, 50);
+    pub_odom_ = nh_.advertise<nav_msgs::Odometry>(publish_odom_name_, 10);
 
     ROS_INFO_STREAM("subscribe to the cmd topic on [" << topic_cmd_vel_name_ << "]");
-    sub_cmd_vel_ = nh_.subscribe(topic_cmd_vel_name_, 50, &Base_Driver::cmd_vel_CallBack, this);
+    sub_cmd_vel_ = nh_.subscribe(topic_cmd_vel_name_, 10, &Base_Driver::cmd_vel_CallBack, this);
 
     // 初始化odom_trans
     odom_tf.header.frame_id         = odom_frame_id_;
@@ -247,6 +247,30 @@ void Base_Driver::base_Loop()
         }
         else
             ROS_WARN_STREAM("Get VELOCITY Data Time Out!");
+
+        isRead = stream->get_Message(MSG_ID_GET_RC);
+        if (isRead)
+        {
+            rxData_rc = stream->get_data_rc();
+            lingao_msgs::LingAoRCStatus rc_msg;
+            
+            rc_msg.header.stamp = ros::Time::now();
+            rc_msg.connect = rxData_rc.connect;
+            rc_msg.joystick_left_x = rxData_rc.joystick_left_x;
+            rc_msg.joystick_left_y = rxData_rc.joystick_left_y;
+            rc_msg.joystick_right_x = rxData_rc.joystick_right_x;
+            rc_msg.joystick_right_y = rxData_rc.joystick_right_y;
+            rc_msg.vra = rxData_rc.vra;
+            rc_msg.vrb = rxData_rc.vrb;
+            rc_msg.swa = rxData_rc.swa;
+            rc_msg.swb = rxData_rc.swb;
+            rc_msg.swc = rxData_rc.swc;
+            rc_msg.swd = rxData_rc.swd;
+
+            pub_rc_.publish(rc_msg);
+        }
+        else
+            ROS_WARN_STREAM("Get Remote Control Data Time Out!");
 
         update_liner_speed();
 

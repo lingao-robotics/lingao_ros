@@ -8,6 +8,7 @@
 #include <tf/transform_broadcaster.h>
 #include <sensor_msgs/Imu.h>
 #include <lingao_msgs/LingAoBmsStatus.h>
+#include <lingao_msgs/LingAoRCStatus.h>
 
 #include <stdio.h>
 #include <string>
@@ -96,7 +97,9 @@ private:
     lingao_msgs::LingAoBmsStatus bat_msg;
     Data_Format_BAT rxData_battery;
 
-    void init_sensor_msg();
+private:
+    ros::Publisher pub_rc_;
+    Data_Format_RC rxData_rc;
 };
 
 #endif // BASE_DRIVER_H
