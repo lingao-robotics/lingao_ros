@@ -1,9 +1,9 @@
 /*
- * Copyright (C) 2021, LingAo Robotics, INC.
+ * Copyright (C) 2022, LingAo Robotics, INC.
  * @Version V1.0
  * @Author owen
  * @Date 2021-08-06 17:08:41
- * @LastEditTime 2021-11-07 14:35:08
+ * @LastEditTime 2022-03-08 21:26:35
  * @LastEditors owen
  * @Description 
  * @FilePath /lingao_ws/src/lingaoRobot/lingao_ros/lingao_base/src/lingao_base_node.cpp

@@ -74,6 +74,7 @@ private:    //IMU
     std::string imu_frame_id_;
     Data_Format_IMU imu_data;
     bool use_imu_;
+    bool imuStreamActive;
     bool imu_calibrate_gyro_;
     int imu_cailb_samples_;
 
@@ -90,19 +91,22 @@ private:    //Update speed to board
     void update_liner_speed();
     void subTimeroutCallback(const ros::TimerEvent& event);
 
-private:    //CAILB
+private:  // CAILB
     double linear_scale_;
     double angular_scale_;
 
-private:
+private:  // BMS
     ros::Publisher pub_bat_;
     lingao_msgs::LingAoBmsStatus bat_msg;
     Data_Format_BAT rxData_battery;
+    bool bmsStreamActive;
 
-private:
+private:  // RC
     ros::Publisher pub_rc_;
     Data_Format_RC rxData_rc;
-    bool use_rc_;
+    bool rcStreamActive;
+    void init_robot_stream();
+
 };
 
 #endif // BASE_DRIVER_H
