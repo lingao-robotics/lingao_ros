@@ -37,27 +37,30 @@ Base_Driver::Base_Driver() : nh_("~")
     if (stream->version_detection())
     {
         Data_Format_VER version = stream->get_data_version();
-        ROS_INFO_STREAM("The version matches successfully, current version: [" << (int)version.protocol_ver << "]");
+        ROS_INFO_STREAM("The version matches successfully, current version: [" << (int)version.protoVer << "]");
         ROS_INFO_STREAM("GET Equipment Identity: " << version.equipmentIdentity);
     }
     else
     {
         Data_Format_VER version = stream->get_data_version();
         ROS_INFO_STREAM("GET Equipment Identity: " << version.equipmentIdentity);
-        ROS_ERROR_STREAM("The driver version does not match,  Main control board driver version:[" << (int)version.protocol_ver << "] Current driver version:["
-                                                                                                   << LA_PROTOCOL_VERSION << "]");
+        ROS_ERROR_STREAM("The driver version does not match,  Main control board driver version:[" << (int)version.protoVer << "] Current driver version:["
+                                                                                                   << LA_PROTO_VER_0310 << "]");
         return;
     }
 
     init_odom();
     init_imu();
     
-    pub_rc_ = nh_.advertise<lingao_msgs::LingAoRCStatus>("rc_state", 10);
     pub_bat_ = nh_.advertise<lingao_msgs::LingAoBmsStatus>("battery_state", 1);
 
-    x_pos_ = 0;
-    y_pos_ = 0;
-    th_ = 0;
+    // init remote control 
+    use_rc_ = false;
+    if(stream->rcAvailable() == true)
+    {
+        use_rc_ = true;
+        pub_rc_ = nh_.advertise<lingao_msgs::LingAoRCStatus>("rc_state", 1);
+    }
 
     liner_tx_.set(.0, .0, .0);
     cmd_vel_cb_timer = nh_.createTimer(ros::Duration(0, cmd_vel_sub_timeout_vel_), &Base_Driver::subTimeroutCallback, this, true);
@@ -87,7 +90,7 @@ void Base_Driver::InitParams()
     // IMU Params
     nh_.param("topic_imu", topic_imu_, std::string("/imu/onboard_imu"));
     nh_.param("imu_frame_id", imu_frame_id_, std::string("imu_link"));
-    nh_.param("imu_use", imu_use_, true);
+    nh_.param("use_imu", use_imu_, true);
     nh_.param("imu_calibrate_gyro", imu_calibrate_gyro_, true);
     nh_.param("imu_cailb_samples", imu_cailb_samples_, 300);
     
@@ -95,7 +98,14 @@ void Base_Driver::InitParams()
 
 void Base_Driver::init_imu()
 {
-    if (imu_use_)
+    if(stream->onBoardImuAvailable() == false)
+    {
+        if (use_imu_)
+            {ROS_WARN_STREAM("onboard imu unavailable!");}
+        use_imu_ = false;
+    }
+
+    if (use_imu_)
     {
         pub_imu_                = nh_.advertise<sensor_msgs::Imu>(topic_imu_, 50);
         imu_msg.header.frame_id = imu_frame_id_;
@@ -134,6 +144,10 @@ void Base_Driver::init_odom()
     odom_msg.pose.pose.position.z = 0.0;
 
     setCovariance(false);
+
+    x_pos_ = 0;
+    y_pos_ = 0;
+    th_ = 0;
 }
 
 void Base_Driver::setCovariance(bool isMove)
@@ -223,7 +237,7 @@ void Base_Driver::base_Loop()
         else
             ROS_WARN_STREAM("Get VOLTAGE Data Time Out!");
 
-        if (imu_use_)
+        if (use_imu_)
         {
             isRead = stream->get_Message(MSG_ID_GET_IMU);
             if (isRead)
@@ -252,30 +266,33 @@ void Base_Driver::base_Loop()
         else
             ROS_WARN_STREAM("Get VELOCITY Data Time Out!");
 
-        isRead = stream->get_Message(MSG_ID_GET_RC);
-        if (isRead)
+        if (use_rc_)
         {
-            rxData_rc = stream->get_data_rc();
-            lingao_msgs::LingAoRCStatus rc_msg;
-            
-            rc_msg.header.stamp = ros::Time::now();
-            rc_msg.connect = rxData_rc.connect;
-            rc_msg.joystick_left_x = rxData_rc.joystick_left_x;
-            rc_msg.joystick_left_y = rxData_rc.joystick_left_y;
-            rc_msg.joystick_right_x = rxData_rc.joystick_right_x;
-            rc_msg.joystick_right_y = rxData_rc.joystick_right_y;
-            rc_msg.vra = rxData_rc.vra;
-            rc_msg.vrb = rxData_rc.vrb;
-            rc_msg.swa = rxData_rc.swa;
-            rc_msg.swb = rxData_rc.swb;
-            rc_msg.swc = rxData_rc.swc;
-            rc_msg.swd = rxData_rc.swd;
+            isRead = stream->get_Message(MSG_ID_GET_RC);
+            if (isRead)
+            {
+                rxData_rc = stream->get_data_rc();
+                lingao_msgs::LingAoRCStatus rc_msg;
+                
+                rc_msg.header.stamp = ros::Time::now();
+                rc_msg.connect = rxData_rc.connect;
+                rc_msg.CH1_joystick_left_x = rxData_rc.ch1_JoystickLeftX;
+                rc_msg.CH2_joystick_left_y = rxData_rc.ch2_JoystickLeftY;
+                rc_msg.CH3_joystick_right_y = rxData_rc.ch3_JoystickRightY;
+                rc_msg.CH4_joystick_right_x = rxData_rc.ch4_JoystickRightX;
+                rc_msg.CH5 = rxData_rc.ch5;
+                rc_msg.CH6 = rxData_rc.ch6;
+                rc_msg.CH7 = rxData_rc.ch7;
+                rc_msg.CH8 = rxData_rc.ch8;
+                rc_msg.CH9 = rxData_rc.ch9;
+                rc_msg.CH10 = rxData_rc.ch10;
 
-            pub_rc_.publish(rc_msg);
-        }
-        else
+                pub_rc_.publish(rc_msg);
+            }
+            else
             ROS_WARN_STREAM("Get Remote Control Data Time Out!");
-
+        }
+        
         update_liner_speed();
 
         ros::spinOnce();

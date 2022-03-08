@@ -3,7 +3,7 @@
     <!-- args-->
     <arg name="pub_odom_tf" default="false"/>
 
-    <arg name="imu_use" default="false"/>
+    <arg name="use_imu" default="false"/>
     <arg name="topic_imu" default="/imu/onboard_imu" />
 
     <arg name="linear_scale" default="1.0"/>
@@ -22,7 +22,7 @@
         <param name="base_frame_id" value="base_footprint" />
         <param name="pub_odom_tf" value="$(arg pub_odom_tf)" />
 
-        <param  name="imu_use" value="$(arg imu_use)"/>
+        <param  name="use_imu" value="$(arg use_imu)"/>
         <param name="topic_imu" value="$(arg topic_imu)" />
         <param name="imu_frame_id" value="imu_link" />
         <param name="imu_calibrate_gyro" value="true" />

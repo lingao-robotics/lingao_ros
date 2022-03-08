@@ -43,7 +43,7 @@ private:
     void InitParams(); 
     void setCovariance(bool isMove);
 
-private:    //ODOM
+private:    // ODOM
     ros::Publisher pub_odom_;
     ros::Time last_odom_vel_time_;
     ros::Time current_time;
@@ -73,7 +73,7 @@ private:    //IMU
     std::string topic_imu_;
     std::string imu_frame_id_;
     Data_Format_IMU imu_data;
-    bool imu_use_;
+    bool use_imu_;
     bool imu_calibrate_gyro_;
     int imu_cailb_samples_;
 
@@ -102,6 +102,7 @@ private:
 private:
     ros::Publisher pub_rc_;
     Data_Format_RC rxData_rc;
+    bool use_rc_;
 };
 
 #endif // BASE_DRIVER_H

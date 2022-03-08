@@ -196,9 +196,9 @@ void Data_Stream::data_undecode(MessageFormat_st msgData)
     case MSG_ID_GET_VER:
         if (sizeof(Data_Format_VER) == msgData.head.data_length)
         {
-            lingao_version.EndianSwapSet(msgData.data);
+            version.EndianSwapSet(msgData.data);
         }
-        else  lingao_version_error = true;
+        else  verError = true;
 
         check = true;
         break;
@@ -223,10 +223,12 @@ bool Data_Stream::version_detection(void)
 {
     for (size_t i = 0; i < 4; i++)
     {
-        lingao_version_error = false;
+        verError = false;
         if (get_Message(MSG_ID_GET_VER, 300))
         {
-            if ((lingao_version.protocol_ver == LA_PROTOCOL_VERSION || lingao_version.protocol_ver == 30) && lingao_version_error == false)
+            if (verError == false && 
+                (version.protoVer == LA_PROTO_VER_0220 ||
+                 version.protoVer == LA_PROTO_VER_0310))
             {
                 return true;
             }
@@ -236,8 +238,8 @@ bool Data_Stream::version_detection(void)
             }
         }
     }
-    lingao_version.equipmentIdentity = 0;
-    lingao_version.protocol_ver = 0;
+    version.equipmentIdentity = 0;
+    version.protoVer = 0;
     return false;
     
 }
