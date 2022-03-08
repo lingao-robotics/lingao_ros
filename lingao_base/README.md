@@ -1,8 +1,9 @@
 # Lingao_bringup 灵遨科技ROS底层通讯驱动
 
- **Copyright (c) 2020 LingAo Robot**
+ **Copyright (c) 2021 LingAo Robot**
 
-当前版本协议：V2.2.0
+当前版本协议：V3.1.0
+**注意 :**当前版本为遥控协议定制版本
 
  **NOTE:**  
 * 驱动使用私有通讯协议
@@ -29,6 +30,9 @@ roslaunch lingao_base lingao_base_driver.launch
 
 /lingao_base_driver/battery_state (lingao_msgs/LingAoBmsStatus)
 - 电池电压和电量状态
+
+/lingao_base_driver/rc_state (lingao_msgs/LingAoRCStatus)
+- 反馈遥控数据（包括遥杆、开关、旋钮数据）
 
 ## 订阅的话题
 /cmd_vel ([geometry_msgs/Twist](http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/Twist.html))

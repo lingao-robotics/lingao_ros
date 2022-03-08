@@ -185,6 +185,14 @@ void Data_Stream::data_undecode(MessageFormat_st msgData)
         }
         break;
 
+    case MSG_ID_GET_RC:
+        if(sizeof(Data_Format_RC) == msgData.head.data_length)
+        {
+            rxData_rc.EndianSwapSet(msgData.data);
+            check = true;
+        }
+        break;
+
     case MSG_ID_GET_VER:
         if (sizeof(Data_Format_VER) == msgData.head.data_length)
         {
@@ -242,6 +250,7 @@ bool Data_Stream::get_Message(Message_Id_Enum msgId, int timeoutMs)
     {
     case MSG_ID_GET_VER:
     case MSG_ID_GET_IMU:
+    case MSG_ID_GET_RC:
     case MSG_ID_GET_VELOCITY:
     case MSG_ID_GET_VOLTAGE:
         isSend = msg_Transmit(msgId);
