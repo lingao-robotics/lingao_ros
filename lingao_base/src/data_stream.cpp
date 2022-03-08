@@ -228,6 +228,7 @@ bool Data_Stream::version_detection(void)
         {
             if (verError == false && 
                 (version.protoVer == LA_PROTO_VER_0220 ||
+                 version.protoVer == LA_PROTO_VER_0300 ||
                  version.protoVer == LA_PROTO_VER_0310))
             {
                 return true;

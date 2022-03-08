@@ -9,6 +9,7 @@
 #define HEAD_FLAG2 0xEF
 
 #define LA_PROTO_VER_0220 22
+#define LA_PROTO_VER_0300 30
 #define LA_PROTO_VER_0310 31
 
 class FormatTools
