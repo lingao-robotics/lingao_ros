@@ -68,6 +68,7 @@ Base_Driver::Base_Driver() : nh_("~")
     active = true;
 }
 
+/// 初始化参数
 void Base_Driver::InitParams()
 {
     // Serial Port Params
@@ -96,6 +97,7 @@ void Base_Driver::InitParams()
     
 }
 
+/// IMU初始化
 void Base_Driver::init_imu()
 {
     if(stream->onBoardImuAvailable() == false)
@@ -125,6 +127,7 @@ void Base_Driver::init_imu()
     }
 }
 
+/// ODOM初始化
 void Base_Driver::init_odom()
 {
     ROS_INFO_STREAM("advertise to the odom topic on [" << publish_odom_name_ << "]");
@@ -150,6 +153,7 @@ void Base_Driver::init_odom()
     th_ = 0;
 }
 
+/// 运动协方差配置
 void Base_Driver::setCovariance(bool isMove)
 {
     if (isMove == true)
@@ -188,6 +192,7 @@ void Base_Driver::setCovariance(bool isMove)
 
 void Base_Driver::subTimeroutCallback(const ros::TimerEvent& event) { liner_tx_.set(.0, .0, .0); }
 
+/// 订阅回调速度控制命令
 void Base_Driver::cmd_vel_CallBack(const geometry_msgs::Twist& msg)
 {
     liner_tx_.set(msg.linear.x, msg.linear.y, msg.angular.z);
@@ -203,6 +208,7 @@ void Base_Driver::update_liner_speed()
     stream->update_liner_speed(linertx);
 }
 
+/// 程序主循环
 void Base_Driver::base_Loop()
 {
     bool isRead = false;
@@ -376,6 +382,7 @@ void Base_Driver::publish_odom()
     pub_odom_.publish(odom_msg);
 }
 
+/// IMU数据发布
 void Base_Driver::publish_imu()
 {
     imu_msg.header.stamp          = ros::Time::now();
