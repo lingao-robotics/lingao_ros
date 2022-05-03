@@ -1,8 +1,8 @@
 # Lingao_bringup 灵遨科技ROS底层通讯驱动
 
- **Copyright (c) 2020 LingAo Robot**
+ **Copyright (c) 2021 LingAo Robot**
 
-当前版本协议：V2.2.0
+当前版本协议：V3.1.0
 
  **NOTE:**  
 * 驱动使用私有通讯协议
@@ -29,6 +29,9 @@ roslaunch lingao_base lingao_base_driver.launch
 
 /lingao_base_driver/battery_state (lingao_msgs/LingAoBmsStatus)
 - 电池电压和电量状态
+
+/lingao_base_driver/rc_state (lingao_msgs/LingAoRCStatus)
+- 反馈遥控数据（包括遥杆、开关、旋钮数据）
 
 ## 订阅的话题
 /cmd_vel ([geometry_msgs/Twist](http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/Twist.html))
@@ -59,5 +62,6 @@ roslaunch lingao_base lingao_base_driver.launch
     是否校准陀螺仪
 - ~imu_cailb_samples (int, default: 300)  
     校准陀螺仪偏差的测量次数（越大精度会提高，相对的启动校准时间也增加）
-
+    
+IMU注意事项：首次订阅校准陀螺仪会有延迟并且不要动机器人
     

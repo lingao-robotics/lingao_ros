@@ -8,6 +8,7 @@
 #include <tf/transform_broadcaster.h>
 #include <sensor_msgs/Imu.h>
 #include <lingao_msgs/LingAoBmsStatus.h>
+#include <lingao_msgs/LingAoRCStatus.h>
 
 #include <stdio.h>
 #include <string>
@@ -42,7 +43,7 @@ private:
     void InitParams(); 
     void setCovariance(bool isMove);
 
-private:    //ODOM
+private:    // ODOM
     ros::Publisher pub_odom_;
     ros::Time last_odom_vel_time_;
     ros::Time current_time;
@@ -72,7 +73,8 @@ private:    //IMU
     std::string topic_imu_;
     std::string imu_frame_id_;
     Data_Format_IMU imu_data;
-    bool imu_use_;
+    bool use_imu_;
+    bool imuStreamActive;
     bool imu_calibrate_gyro_;
     int imu_cailb_samples_;
 
@@ -89,16 +91,22 @@ private:    //Update speed to board
     void update_liner_speed();
     void subTimeroutCallback(const ros::TimerEvent& event);
 
-private:    //CAILB
+private:  // CAILB
     double linear_scale_;
     double angular_scale_;
 
-private:
+private:  // BMS
     ros::Publisher pub_bat_;
     lingao_msgs::LingAoBmsStatus bat_msg;
     Data_Format_BAT rxData_battery;
+    bool bmsStreamActive;
 
-    void init_sensor_msg();
+private:  // RC
+    ros::Publisher pub_rc_;
+    Data_Format_RC rxData_rc;
+    bool rcStreamActive;
+    void init_robot_stream();
+
 };
 
 #endif // BASE_DRIVER_H

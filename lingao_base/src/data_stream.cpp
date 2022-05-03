@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020, LingAo Robotics, INC.
+ *  Copyright (C) 2022, LingAo Robotics, INC.
  *  author: owen <keaa@keaa.net>
  *  maintainer: owen <keaa@keaa.net>
  *
@@ -185,12 +185,20 @@ void Data_Stream::data_undecode(MessageFormat_st msgData)
         }
         break;
 
+    case MSG_ID_GET_RC:
+        if(sizeof(Data_Format_RC) == msgData.head.data_length)
+        {
+            rxData_rc.EndianSwapSet(msgData.data);
+            check = true;
+        }
+        break;
+
     case MSG_ID_GET_VER:
         if (sizeof(Data_Format_VER) == msgData.head.data_length)
         {
-            lingao_version.EndianSwapSet(msgData.data);
+            version.EndianSwapSet(msgData.data);
         }
-        else  lingao_version_error = true;
+        else  verError = true;
 
         check = true;
         break;
@@ -215,10 +223,10 @@ bool Data_Stream::version_detection(void)
 {
     for (size_t i = 0; i < 4; i++)
     {
-        lingao_version_error = false;
+        verError = false;
         if (get_Message(MSG_ID_GET_VER, 300))
         {
-            if ((lingao_version.protocol_ver == LA_PROTOCOL_VERSION || lingao_version.protocol_ver == 30) && lingao_version_error == false)
+            if (verError == false && (version.protoVer >= LA_PROTO_VER_0220 ))
             {
                 return true;
             }
@@ -228,8 +236,8 @@ bool Data_Stream::version_detection(void)
             }
         }
     }
-    lingao_version.equipmentIdentity = 0;
-    lingao_version.protocol_ver = 0;
+    version.equipmentIdentity = 0;
+    version.protoVer = 0;
     return false;
     
 }
@@ -242,6 +250,7 @@ bool Data_Stream::get_Message(Message_Id_Enum msgId, int timeoutMs)
     {
     case MSG_ID_GET_VER:
     case MSG_ID_GET_IMU:
+    case MSG_ID_GET_RC:
     case MSG_ID_GET_VELOCITY:
     case MSG_ID_GET_VOLTAGE:
         isSend = msg_Transmit(msgId);

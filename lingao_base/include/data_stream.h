@@ -48,6 +48,7 @@ class Data_Stream {
     Data_Format_Liner rxData_liner;
     Data_Format_IMU rxDdata_imu;
     Data_Format_BAT rxData_battery;
+    Data_Format_RC rxData_rc;
 
     std::mutex m;
     std::condition_variable cv;
@@ -58,10 +59,27 @@ class Data_Stream {
 
     Transmission* trans;
 
-    Data_Format_VER lingao_version;
-    bool lingao_version_error;
+    Data_Format_VER version;
+    bool verError;
 
   public:
+
+    bool onBoardImuAvailable()
+    {
+        if(version.protoVer >= LA_PROTO_VER_0220)
+            {return true;}
+        else
+            {return false;}
+    }
+
+    bool rcAvailable()
+    {
+        if(version.protoVer >= LA_PROTO_VER_0310)
+            {return true;}
+        else
+            {return false;}
+    }
+
     Data_Format_Liner get_data_liner()
     {
         std::lock_guard<std::mutex> lock(getData_mutex_);
@@ -83,7 +101,13 @@ class Data_Stream {
     Data_Format_VER get_data_version()
     {
         std::lock_guard<std::mutex> lock(getData_mutex_);
-        return lingao_version;
+        return version;
+    }
+
+    Data_Format_RC get_data_rc()
+    {
+        std::lock_guard<std::mutex> lock(getData_mutex_);
+        return rxData_rc;
     }
 };
 

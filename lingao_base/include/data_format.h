@@ -7,8 +7,10 @@
 
 #define HEAD_FLAG1 0xFE
 #define HEAD_FLAG2 0xEF
-#define LA_PROTOCOL_VERSION 22
 
+#define LA_PROTO_VER_0220 22
+#define LA_PROTO_VER_0300 30
+#define LA_PROTO_VER_0310 31
 
 class FormatTools
 {
@@ -69,11 +71,12 @@ public:
 
 enum Message_Id_Enum
 {
-    MSG_ID_NULL = 0,            //无
-    MSG_ID_SET_VELOCITY = 1,    //设置线速度、角速度
-    MSG_ID_GET_VELOCITY = 2,    //获取线速度、角速度
-    MSG_ID_GET_VOLTAGE  = 3,    //获取电压，电量数据
-    MSG_ID_GET_IMU = 4,         //获取IMU数据
+    MSG_ID_NULL = 0x00,            //无
+    MSG_ID_SET_VELOCITY = 0x01,     // 设置线速度、角速度
+    MSG_ID_GET_VELOCITY = 0x02,    // 获取线速度、角速度
+    MSG_ID_GET_VOLTAGE  = 0x03,    // 获取电压，电量数据
+    MSG_ID_GET_IMU = 0x04,               // 获取IMU数据
+    MSG_ID_GET_RC   = 0x06,               // 获取遥控数据
     MSG_ID_GET_VER = 0xFF
 };
 
@@ -135,15 +138,36 @@ struct Data_Format_BAT
     }
 };
 
+//遥控数据结构体
+struct Data_Format_RC
+{
+    bool connect;
+    char ch1;    //左摇杆
+    char ch2;
+    char ch3;    //右摇杆
+    char ch4;
+    char ch5;
+    char ch6;
+    char ch7;
+    char ch8;
+    char ch9;
+    char ch10;
+
+    void EndianSwapSet(const void *src)
+    {
+        memcpy(this, src, sizeof(Data_Format_RC));
+    }
+};
+
 //版本结构体
 struct Data_Format_VER
 {
-    unsigned char protocol_ver;    //获取协议版本号
+    unsigned char protoVer;    //获取协议版本号
     uint32_t equipmentIdentity;
 
     void EndianSwapSet(const void *src)
     {
-        protocol_ver = *(unsigned char *)src;
+        protoVer = *(unsigned char *)src;
         FormatTools::EndianSwap(&equipmentIdentity, (unsigned char *)src+1, sizeof(equipmentIdentity), sizeof(equipmentIdentity));
     }
 };
