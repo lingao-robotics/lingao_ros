@@ -142,10 +142,10 @@ struct Data_Format_BAT
 struct Data_Format_RC
 {
     bool connect;
-    char ch1_JoystickLeftX;    //左摇杆
-    char ch2_JoystickLeftY;
-    char ch3_JoystickRightY;    //右摇杆
-    char ch4_JoystickRightX;
+    char ch1;    //左摇杆
+    char ch2;
+    char ch3;    //右摇杆
+    char ch4;
     char ch5;
     char ch6;
     char ch7;

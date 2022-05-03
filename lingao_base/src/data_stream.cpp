@@ -226,10 +226,7 @@ bool Data_Stream::version_detection(void)
         verError = false;
         if (get_Message(MSG_ID_GET_VER, 300))
         {
-            if (verError == false && 
-                (version.protoVer == LA_PROTO_VER_0220 ||
-                 version.protoVer == LA_PROTO_VER_0300 ||
-                 version.protoVer == LA_PROTO_VER_0310))
+            if (verError == false && (version.protoVer >= LA_PROTO_VER_0220 ))
             {
                 return true;
             }

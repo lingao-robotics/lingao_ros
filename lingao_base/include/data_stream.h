@@ -66,7 +66,7 @@ class Data_Stream {
 
     bool onBoardImuAvailable()
     {
-        if(version.protoVer == LA_PROTO_VER_0220)
+        if(version.protoVer >= LA_PROTO_VER_0220)
             {return true;}
         else
             {return false;}
@@ -74,7 +74,7 @@ class Data_Stream {
 
     bool rcAvailable()
     {
-        if(version.protoVer == LA_PROTO_VER_0310)
+        if(version.protoVer >= LA_PROTO_VER_0310)
             {return true;}
         else
             {return false;}

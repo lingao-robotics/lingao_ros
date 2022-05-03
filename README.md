@@ -2,7 +2,6 @@
 
 该存储库是灵遨ROS机器人最小软件包集  
 当前版本协议：V3.1.0
-**注意 :**当前版本为遥控协议定制版本
 
 注意：如果是旧版本协议请切换到[V2.1.0分支](https://keaa.coding.net/public/lingaoros/lingao_ros/git/files/2.1.0)
 
@@ -112,3 +111,7 @@
     发布错误的Twist速度消息可能使机器人以最快速度运行，你可以随时准备好您的遥控器来接管控制。
 
 
+## 问题Q&A  
+
+* 问：如何下载驱动包？  
+    答：使用GIT方式拉取即可：`git clone https://e.coding.net/keaa/lingaoros/lingao_ros.git`

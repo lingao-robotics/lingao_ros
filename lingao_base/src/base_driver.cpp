@@ -317,10 +317,10 @@ void Base_Driver::base_Loop()
                 
                 rc_msg.header.stamp = ros::Time::now();
                 rc_msg.connect = rxData_rc.connect;
-                rc_msg.CH1_joystick_left_x = rxData_rc.ch1_JoystickLeftX;
-                rc_msg.CH2_joystick_left_y = rxData_rc.ch2_JoystickLeftY;
-                rc_msg.CH3_joystick_right_y = rxData_rc.ch3_JoystickRightY;
-                rc_msg.CH4_joystick_right_x = rxData_rc.ch4_JoystickRightX;
+                rc_msg.CH1 = rxData_rc.ch1;
+                rc_msg.CH2 = rxData_rc.ch2;
+                rc_msg.CH3 = rxData_rc.ch3;
+                rc_msg.CH4 = rxData_rc.ch4;
                 rc_msg.CH5 = rxData_rc.ch5;
                 rc_msg.CH6 = rxData_rc.ch6;
                 rc_msg.CH7 = rxData_rc.ch7;

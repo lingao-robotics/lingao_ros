@@ -3,7 +3,6 @@
  **Copyright (c) 2021 LingAo Robot**
 
 当前版本协议：V3.1.0
-**注意 :**当前版本为遥控协议定制版本
 
  **NOTE:**  
 * 驱动使用私有通讯协议
@@ -63,5 +62,6 @@ roslaunch lingao_base lingao_base_driver.launch
     是否校准陀螺仪
 - ~imu_cailb_samples (int, default: 300)  
     校准陀螺仪偏差的测量次数（越大精度会提高，相对的启动校准时间也增加）
-
+    
+IMU注意事项：首次订阅校准陀螺仪会有延迟并且不要动机器人
     
