@@ -56,6 +56,9 @@ Base_Driver::Base_Driver() : nh_("~")
     liner_tx_.set(.0, .0, .0);
     cmd_vel_cb_timer = nh_.createTimer(ros::Duration(0, cmd_vel_sub_timeout_vel_), &Base_Driver::subTimeroutCallback, this, true);
 
+    timer_10hz_cb_timer = nh_.createTimer(ros::Duration(0.1), &Base_Driver::Timer10HzCallbackCallback, this, false);
+    timer_1hz_cb_timer = nh_.createTimer(ros::Duration(1), &Base_Driver::Timer1HzCallbackCallback, this, false);
+
     active = true;
 }
 
@@ -245,6 +248,16 @@ void Base_Driver::setCovariance(bool isMove)
     }
 }
 
+void Base_Driver::Timer10HzCallbackCallback(const ros::TimerEvent& event)
+{
+    timer10HzTimeOut = true;
+}
+
+void Base_Driver::Timer1HzCallbackCallback(const ros::TimerEvent& event)
+{
+    timer1HzTimeOut = true;
+}
+
 void Base_Driver::subTimeroutCallback(const ros::TimerEvent& event) { liner_tx_.set(.0, .0, .0); }
 
 /// 订阅回调速度控制命令
@@ -272,27 +285,64 @@ void Base_Driver::base_Loop()
             return;
         }
 
-        //发送读取请求，并且等待数据读取，读取成功返回true
-        // 电池数据流
-        if (bmsStreamActive)
+        if (timer1HzTimeOut)
         {
-            isRead = stream->get_Message(MSG_ID_GET_VOLTAGE);
-            if (isRead)
+            //发送读取请求，并且等待数据读取，读取成功返回true
+            // 电池数据流
+            if (bmsStreamActive)
             {
-                //成功读取后数据处理
-                rxData_battery      = stream->get_data_battery();
-                bat_msg.header.stamp = ros::Time::now();
-                bat_msg.voltage     = rxData_battery.voltage / 100.0;
-                bat_msg.current     = rxData_battery.current / 100.0;
-                bat_msg.percentage  = rxData_battery.percentage;
-                bat_msg.temperature = rxData_battery.temperature /10.0;
+                isRead = stream->get_Message(MSG_ID_GET_VOLTAGE);
+                if (isRead)
+                {
+                    //成功读取后数据处理
+                    rxData_battery      = stream->get_data_battery();
+                    bat_msg.header.stamp = ros::Time::now();
+                    bat_msg.voltage     = rxData_battery.voltage / 100.0;
+                    bat_msg.current     = rxData_battery.current / 100.0;
+                    bat_msg.percentage  = rxData_battery.percentage;
+                    bat_msg.temperature = rxData_battery.temperature /10.0;
 
-                pub_bat_.publish(bat_msg);
+                    pub_bat_.publish(bat_msg);
+                }
+                else
+                    ROS_WARN_STREAM("Get VOLTAGE Data Time Out!");
             }
-            else
-                ROS_WARN_STREAM("Get VOLTAGE Data Time Out!");
+            timer1HzTimeOut = false;
         }
 
+        if (timer10HzTimeOut)
+        {
+            // RC遥控数据流
+            if (rcStreamActive)
+            {
+                isRead = stream->get_Message(MSG_ID_GET_RC);
+                if (isRead)
+                {
+                    rxData_rc = stream->get_data_rc();
+                    lingao_msgs::LingAoRCStatus rc_msg;
+                    
+                    rc_msg.header.stamp = ros::Time::now();
+                    rc_msg.connect = rxData_rc.connect;
+                    rc_msg.CH1 = rxData_rc.ch1;
+                    rc_msg.CH2 = rxData_rc.ch2;
+                    rc_msg.CH3 = rxData_rc.ch3;
+                    rc_msg.CH4 = rxData_rc.ch4;
+                    rc_msg.CH5 = rxData_rc.ch5;
+                    rc_msg.CH6 = rxData_rc.ch6;
+                    rc_msg.CH7 = rxData_rc.ch7;
+                    rc_msg.CH8 = rxData_rc.ch8;
+                    rc_msg.CH9 = rxData_rc.ch9;
+                    rc_msg.CH10 = rxData_rc.ch10;
+
+                    pub_rc_.publish(rc_msg);
+                }
+                else
+                ROS_WARN_STREAM("Get Remote Control Data Time Out!");
+            }
+
+            timer10HzTimeOut = false;
+        }
+        
         // IMU数据流
         if (imuStreamActive)
         {
@@ -304,34 +354,6 @@ void Base_Driver::base_Loop()
             }
             else
                 ROS_WARN_STREAM("Get IMU Data Time Out!");
-        }
-        
-        // RC遥控数据流
-        if (rcStreamActive)
-        {
-            isRead = stream->get_Message(MSG_ID_GET_RC);
-            if (isRead)
-            {
-                rxData_rc = stream->get_data_rc();
-                lingao_msgs::LingAoRCStatus rc_msg;
-                
-                rc_msg.header.stamp = ros::Time::now();
-                rc_msg.connect = rxData_rc.connect;
-                rc_msg.CH1 = rxData_rc.ch1;
-                rc_msg.CH2 = rxData_rc.ch2;
-                rc_msg.CH3 = rxData_rc.ch3;
-                rc_msg.CH4 = rxData_rc.ch4;
-                rc_msg.CH5 = rxData_rc.ch5;
-                rc_msg.CH6 = rxData_rc.ch6;
-                rc_msg.CH7 = rxData_rc.ch7;
-                rc_msg.CH8 = rxData_rc.ch8;
-                rc_msg.CH9 = rxData_rc.ch9;
-                rc_msg.CH10 = rxData_rc.ch10;
-
-                pub_rc_.publish(rc_msg);
-            }
-            else
-            ROS_WARN_STREAM("Get Remote Control Data Time Out!");
         }
 
         // 速度反馈数据流

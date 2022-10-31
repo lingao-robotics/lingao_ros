@@ -34,6 +34,11 @@ private:
 
     ros::NodeHandle nh_;
     ros::Subscriber sub_cmd_vel_;
+
+    ros::Timer timer_10hz_cb_timer;
+    bool timer10HzTimeOut;
+    ros::Timer timer_1hz_cb_timer;
+    bool timer1HzTimeOut;
     
     //serial port
     std::string serial_port_;
@@ -42,6 +47,9 @@ private:
 
     void InitParams(); 
     void setCovariance(bool isMove);
+
+    void Timer10HzCallbackCallback(const ros::TimerEvent& event);
+    void Timer1HzCallbackCallback(const ros::TimerEvent& event);
 
 private:    // ODOM
     ros::Publisher pub_odom_;
