@@ -1,4 +1,8 @@
 <launch>
+
+  <!-- Arguments -->
+  <arg name="chassis_model" default="$(optenv LINGAO_MODEL MiniUGV-20A)" doc="model type [MiniUGV-10A, MiniUGV-20A, LAUGV-50A ...]"/>
+
   <node pkg="ltme_node" type="ltme_node" name="ltme_node" output="screen">
     <param name="device_model" value="LTME-02A"/>
 
@@ -14,7 +18,7 @@
     <!-- <param name="enforced_transport_mode" value="none"/> -->
 
     <!-- Frame ID used by the published LaserScan messages -->
-    <param name="frame_id" value="laser"/>
+    <param name="frame_id" value="laser_link"/>
 
     <!-- LTME-02 can be configured with different scan frequencies, ranging from 10 Hz to 30 Hz with 5 Hz increments. -->
     <!-- The driver automatically queries device for its frequency upon connection and setup LaserScan parameters accordingly. -->
@@ -43,4 +47,9 @@
     <!-- Averaging reduces jitter but angular resolution will also decrease by the same factor -->
     <!-- <param name="average_factor" value="2"/> -->
   </node>
+
+  <!-- Publish static transform of the laser. Define your sensor offset here -->
+  <node pkg="tf2_ros" if="$(eval chassis_model == 'MiniUGV-20A')" type="static_transform_publisher" name="base_link_to_laser" args="0.053 0 0.354 0 0 0  /base_link /laser_link"/>
+  <node pkg="tf2_ros" if="$(eval chassis_model == 'LAUGV-50A')" type="static_transform_publisher" name="base_link_to_laser" args="0.185 0 0.373 0 0 0  /base_link /laser_link"/>
+
 </launch>
