@@ -158,8 +158,10 @@ void Data_Stream::data_undecode(MessageFormat_st msgData)
     switch ((Message_Id_Enum)msgData.head.msg_id)
     {
     case MSG_ID_SET_VELOCITY:
+    case MSG_ID_SET_SOUND_LIGHT:
         check = true;
         break;
+
     case MSG_ID_GET_VELOCITY:
         if(sizeof(Data_Format_Liner) == msgData.head.data_length)
         {
@@ -189,6 +191,14 @@ void Data_Stream::data_undecode(MessageFormat_st msgData)
         if(sizeof(Data_Format_RC) == msgData.head.data_length)
         {
             rxData_rc.EndianSwapSet(msgData.data);
+            check = true;
+        }
+        break;
+
+    case MSG_ID_GET_STATUS:
+        if(sizeof(Data_Format_Status) == msgData.head.data_length)
+        {
+            rxdata_status.EndianSwapSet(msgData.data);
             check = true;
         }
         break;
@@ -253,12 +263,14 @@ bool Data_Stream::get_Message(Message_Id_Enum msgId, int timeoutMs)
     case MSG_ID_GET_RC:
     case MSG_ID_GET_VELOCITY:
     case MSG_ID_GET_VOLTAGE:
+    case MSG_ID_GET_STATUS:
         isSend = msg_Transmit(msgId);
         if (!isSend)return false;
         getMessageBlockingID = msgId;
         break;
 
     case MSG_ID_SET_VELOCITY:
+    case MSG_ID_SET_SOUND_LIGHT:
         getMessageBlockingID = msgId;
         break;
     
@@ -281,6 +293,12 @@ void Data_Stream::update_liner_speed(Data_Format_Liner linertx)
 {
     msg_Transmit(MSG_ID_SET_VELOCITY, (unsigned char*)&linertx, sizeof(Data_Format_Liner));
     get_Message(MSG_ID_SET_VELOCITY);
+}
+
+void Data_Stream::SetSoundLight(Data_Format_Sound_Light sl)
+{
+    msg_Transmit(MSG_ID_SET_SOUND_LIGHT, (unsigned char*)&sl, sizeof(Data_Format_Sound_Light));
+    get_Message(MSG_ID_SET_SOUND_LIGHT);
 }
 
 bool Data_Stream::msg_Transmit(Message_Id_Enum msgId)

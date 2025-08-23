@@ -1,60 +1,82 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(lingao_base)
 
-##################
-## Dependencies ##
-##################
+# Default to C++14
+set(CMAKE_CXX_STANDARD 14)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++14)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-#依赖包
-find_package(catkin REQUIRED COMPONENTS
-    roscpp 
+IF(CMAKE_BUILD_TYPE MATCHES Debug)
+  set(CMAKE_CXX_FLAGS_RELEASE "-O1 -Wall -g -pthread")
+else()
+  set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g -pthread")
+endif()
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+
+# ros2
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+
+# msgs interfaces
+find_package(nav_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(lingao_msgs REQUIRED)
+
+# uncomment the following section in order to fill in
+# further dependencies manually.
+# find_package(<dependency> REQUIRED)
+
+include_directories(
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/include/lingao_base_driver
+)
+
+add_library(lingao_base_driver
+  src/lingao_base_driver.cpp
+  src/Serial_Async.cpp
+  src/data_stream.cpp
+)
+
+ament_target_dependencies(
+  lingao_base_driver
+    rclcpp
     tf2
-		tf2_ros
-    lingao_msgs 
-    geometry_msgs 
-    sensor_msgs 
+    tf2_ros
+    tf2_geometry_msgs
+    lingao_msgs
+    sensor_msgs
+    geometry_msgs
     nav_msgs
 )
 
-###################################
-## catkin specific configuration ##
-###################################
-
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES lingao_base
-  CATKIN_DEPENDS roscpp tf2 tf2_ros nav_msgs lingao_msgs geometry_msgs sensor_msgs
-)
-
-###########
-## Build ##
-###########
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
-
-
-add_library(lingao_base_driver
-  src/base_driver.cpp
-  src/Serial_Async.cpp
-  src/data_stream.cpp
-  src/TCP_Async.cpp
-  src/UDP_Async.cpp
-  )
-
-
-# lingao base driver node
+## Build 
 add_executable(lingao_base_node src/lingao_base_node.cpp)
-add_dependencies(lingao_base_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(lingao_base_node lingao_base_driver ${catkin_LIBRARIES})
+target_link_libraries(lingao_base_node lingao_base_driver boost_thread)
 
+install(TARGETS 
+  lingao_base_node
+  DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY launch startup
+  DESTINATION share/${PROJECT_NAME})
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # uncomment the line when a copyright and license is not present in all source files
+  #set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # uncomment the line when this package is not in a git repo
+  #set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_package()

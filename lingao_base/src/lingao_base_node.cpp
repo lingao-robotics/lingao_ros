@@ -1,22 +1,21 @@
 /*
  * Copyright (C) 2022, LingAo Robotics, INC.
  * @Version V1.0
- * @Author owen
- * @Date 2021-08-06 17:08:41
- * @LastEditTime 2022-03-08 21:26:35
- * @LastEditors owen
+ * @Author owen (keaa@keaa.net)
+ * @Date 2022-11-09 20:27:15
+ * @LastEditTime 2022-11-09 20:37:57
+ * @LastEditors owen (keaa@keaa.net)
  * @Description 
- * @FilePath /lingao_ws/src/lingaoRobot/lingao_ros/lingao_base/src/lingao_base_node.cpp
+ * @FilePath /lingao_ros2/lingao_base/src/lingao_base_node.cpp
  */
 
-#include "base_driver.h"
+#include "rclcpp/rclcpp.hpp"
+#include "lingao_base_driver.h"
 
-int main(int argc, char** argv )
+int main(int argc, char * argv[])
 {
-    ros::init(argc, argv, "lingao_base_driver");
-
-    Base_Driver base_driver;
-    base_driver.base_Loop();
-
-    return 0;
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<LingaoRos::LingAoBaseDriver>());
+  rclcpp::shutdown();
+  return 0;
 }

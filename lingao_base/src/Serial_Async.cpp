@@ -6,7 +6,6 @@
  *  Serial Port Async server
  */
 
-
 #include "Serial_Async.h"
 #include <sys/ioctl.h> 
 
@@ -122,7 +121,7 @@ bool Serial_Async::init()
 
 void Serial_Async::AsyncTask()
 {
-  std::cout << "[ Info ] Serial Port Async Thread started" << std::endl;
+  std::cout << "[INFO] Serial Port Async Thread started" << std::endl;
   doRead();
   io_sev_->run();
 }

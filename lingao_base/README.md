@@ -1,8 +1,8 @@
-# Lingao_bringup 灵遨科技ROS底层通讯驱动
+# Lingao_bringup 灵遨科技 ROS2 底层通讯驱动
 
- **Copyright (c) 2021 LingAo Robot**
+ **Copyright (c) 2024 LingAo Robot**
 
-当前版本协议：V3.1.0
+当前版本协议：V3.3.0
 
  **NOTE:**  
 * 驱动使用私有通讯协议
@@ -16,45 +16,51 @@
 
 启动驱动包
 ``` linux
-roslaunch lingao_base lingao_base_driver.launch
+ros2 launch lingao_base lingao_base_driver.launch.py
 ```
 
 # Lingao Bringup API
 ## 发布的话题
-/imu/data_raw ([sensor_msgs/Imu](http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Imu.html))  
-- 主题包括基于加速度和陀螺仪传感器的机器人姿态  
+/imu/data_raw ([sensor_msgs/msg/Imu](https://docs.ros2.org/latest/api/sensor_msgs/msg/Imu.html))  
+- 主题包括来自 IMU 的惯性数据。
 
-/raw_odom ([nav_msgs/Odometry](http://docs.ros.org/en/noetic/api/nav_msgs/html/msg/Odometry.html))  
+/raw_odom ([nav_msgs/msg/Odometry](https://docs.ros2.org/latest/api/nav_msgs/msg/Odometry.html))  
 - 基于编码器的的里程表信息
 
-/lingao_base_driver/battery_state (lingao_msgs/LingAoBmsStatus)
+/lingao_base_driver/battery_state (lingao_msgs/msg/LingAoBmsStatus)
 - 电池电压和电量状态
 
-/lingao_base_driver/rc_state (lingao_msgs/LingAoRCStatus)
+/lingao_base_driver/rc_state (lingao_msgs/msg/LingAoRCStatus)
 - 反馈遥控数据（包括遥杆、开关、旋钮数据）
 
+/lingao_base_driver/rc_state (lingao_msgs/msg/ChassisStatus)
+- 反馈底盘状态（电机、急停、防碰撞等）
+
 ## 订阅的话题
-/cmd_vel ([geometry_msgs/Twist](http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/Twist.html))
+/cmd_vel ([geometry_msgs/msg/Twist](https://docs.ros2.org/latest/api/geometry_msgs/msg/Twist.html))
 - 控制机器人平移线速度(单位:m/s)和旋转角速度(单位:rad/s)
 
+
+## 服务话题
+/lingao_base_driver/sound_light_ctrl (lingao_msgs/srv/SoundLightControl)
+- 灯光声控制
+
 ## 参数设置 - Parameters
-设置文件所在位置`/lingao_base/launch/lingao_base_driver.launch`
+设置文件所在位置`/lingao_base/launch/lingao_base_driver.launch.py`
 
-- ~baud (int, default: 230400)  
+- ~serial_port_baud (int, default: 230400)  
     设置串口波特率
-- ~port (string, default: /dev/lingao)  
+- ~serial_port_baud (string, default: /dev/lingao)  
     设置串口号
-- ~freq (int, default: 100)  
-    驱动通讯频率
 
-- ~publish_odom_transform (bool, default: false)  
+- ~pub_odom_tf (bool, default: false)  
     是否发布基于里程计odom的TF转换
 - ~linear_scale (double, default: 1.0)  
     里程计线速度校准比例
 - ~angular_scale (double, default: 1.0)  
     里程计角速度校准比例
   
-- ~imu_use (string, default: false)  
+- ~imu_publish (string, default: false)  
     是否发布板载imu信息
 - ~cmd_vel_sub_timeout (double, default: 1.0)  
     接收cmd_vel超时时间，超时后速度置0

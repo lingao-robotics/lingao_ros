@@ -1,24 +1,29 @@
-<?xml version="1.0.0"?>
-    <package>
-    <name>lingao_bringup</name>
-    <version>1.0.0</version>
-    <description>The lingao bringup package</description>
-    <maintainer email="keaa@keaa.net">owen</maintainer>
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>lingao_bringup</name>
+  <version>0.9.0</version>
+  <description>The lingao bringup package</description>
+  <maintainer email="keaa@keaa.net">lingao</maintainer>
+  <license>Apache License 2.0</license>
 
-    <license>Apache License 2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>lingao_base</depend>
 
-    <author email="keaa@keaa.net">owen</author>
+  <build_depend>rosidl_default_generators</build_depend>
 
-    <buildtool_depend>catkin</buildtool_depend>
-    <build_depend>roscpp</build_depend>
-    <build_depend>rospy</build_depend>
-    <build_depend>sensor_msgs</build_depend>
-    
-    <run_depend>roscpp</run_depend>
-    <run_depend>rospy</run_depend>
-    <run_depend>sensor_msgs</run_depend>
-    <run_depend>imu-filter-madgwick</run_depend>
-    <run_depend>imu_calib</run_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <exec_depend>robot_localization</exec_depend>
+  <exec_depend>imu_filter_madgwick</exec_depend>
 
-    <export></export>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

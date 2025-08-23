@@ -1,41 +1,44 @@
-#  灵遨科技 - 移动机器人 ROS 软件包
+#  灵遨科技 - 移动机器人 ROS2 软件包
 
 该存储库是灵遨ROS机器人最小软件包集  
 当前版本协议：V3.1.0
 
-注意：如果是旧版本协议请切换到 ROS1[V2.1.0分支](../../tree/V2.1.0)
+## ROS1软件包
+使用ROS1软件包分支：[ros1](../../tree/ros1)  
+注意：如果是旧版本协议请切换到ROS1[V2.1.0分支](../../tree/V2.1.0)
 
-## ROS Packages
+**NOTE: 可以使用`git checkout ros1`切换版本**  
+
+## ROS2 Packages
 * lingao_base: 灵遨底盘驱动软件包，用于ROS的底盘通讯收发
 * lingao_bringup: 灵遨ROS节点启动文件和配置包
 * lingao_description: 灵遨机器人URDF模型    
 * lingao_msgs: 灵遨自定义消息
-* imu_calib: 板载imu校准包
 
-## 灵遨科技ROS包的安装
+## 灵遨科技ROS2包的安装
 1. 安装ROS依赖包
     ``` linux
     sudo apt-get install -y \
-    ros-$ROS_DISTRO-roslint \
     ros-$ROS_DISTRO-tf2 \
     ros-$ROS_DISTRO-tf2-ros \
     ros-$ROS_DISTRO-robot-localization \
-    ros-$ROS_DISTRO-imu-filter-madgwick \
     ros-$ROS_DISTRO-teleop-twist-keyboard
     ```
 
 2. 导入lingao_ros包到工作空间
     ``` linux
-    $ mkdir -p ~/lingao_ws/src/
-    $ cd ~/lingao_ws/src/
-    $ catkin_init_workspace
-    $ git clone -b ros1 https://github.com/lingao-robotics/lingao_ros.git
-    $ catkin_make
+    mkdir -p ~/lingao_ws/src/
+    cd ~/lingao_ws/src/
+    git clone https://github.com/lingao-robotics/lingao_ros.git
+    cd ~/lingao_ws
+    colcon build
     ```
+
+    **Note: github clone 速度慢，请更换镜像源：`https://gitee.com/lingao-Robotics/lingao_ros.git`**
 
 3. 工作空间的环境source （可选）
     ``` linux
-    echo "source ~/lingao_ws/devel/setup.bash" >> ~/.bashrc
+    echo "source ~/lingao_ws/install/setup.bash" >> ~/.bashrc
     source ~/.bashrc
     ```
 
@@ -48,21 +51,22 @@
 
 2. 方法二（推荐）：导入lingao设备识别符到系统
     ``` linux
-    $ source ~/lingao_ws/devel/setup.bash
-    $ roscd lingao_base
-    $ sudo cp 50-lingao.rules /etc/udev/rules.d/
+    cd ~/lingao_ws/src/lingao_ros/lingao_base/startup/
+    sudo cp 50-lingao.rules /etc/udev/rules.d/
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger
     ``` 
 
-下位机通讯测试可查看ROS2分支文档
+**Note: 若出现启动错误**请查看[通讯测试手册](doc/CommunicationTest.md)
 
 ## ROS Package 基本用法
 下面是lingao_bringup的启动包，有下面几种（未全列出
 
 1. 单独启动底盘驱动包
     ``` linux
-    roslaunch lingao_base lingao_base_driver.launch
+    ros2 launch lingao_base lingao_base_driver.launch.py
     ```
-    所述 lingao_base/launch/lingao_base_driver.launch 有4个参数：
+    所述 lingao_base/launch/lingao_base_driver.launch.py 有4个参数：
     * imu_use: 是否发布imu信息(default: false)
     * pub_odom_tf: 是否发布里程计TF转换(default: false)
     * linear_scale: 线速度计校准比例(default: 1.0)
@@ -72,36 +76,22 @@
   
 2. 启动bringup，IMU信息滤波并且和里程计融合，发布TF坐标
     ``` linux
-    roslaunch lingao_bringup bringup.launch
+    ros2 launch lingao_bringup bringup.launch.py 
     ```
 3. 启动robot节点，基于bringup基础上启动雷达和载入机器人模型
     ``` linux
-    roslaunch lingao_bringup robot.launch
+    ros2 launch lingao_bringup robot.launch.py
     ```
 
 * 注意： 需在连接通讯端工控启动，选择以上任意一个运行，退出后可运行另外的包
 ---
 ## 使用测试
-首先运行驱动包
+首先运行驱动包[单独启动底盘驱动包](#ros-package-基本用法)
 
 1. 发布 Twist 消息控制小车运动
     ``` linux
-    rostopic pub -r 10 /cmd_vel geometry_msgs/Twist '{linear: {x: 0.3, y: 0, z: 0}, angular: {x: 0, y: 0, z: 0.0}}'
+    ros2 topic pub -r 10 /cmd_vel geometry_msgs/msg/Twist '{linear: {x: 0.3, y: 0, z: 0}, angular: {x: 0, y: 0, z: 0.0}}'
     ```
-
-2. 使用键盘控制机器人
-    ``` linux
-    roslaunch lingao_bringup lingao_teleop_keyboard.launch
-    ```
-    现在可通过下面键盘按键移动机器人：  
-    u       i     o  
-    j       k     l  
-    m       ,        .  
-
-    改变速度：
-    q/z : 增加/减少最大速度 10%  
-    w/x : 仅增加/减少 10% 的线速度  
-    e/c : 仅增加/减少 10% 的角速度  
 
 
 * 安全注意事项：  
@@ -109,4 +99,3 @@
     键盘控制节点默认速度值很高，请确保在开始用键盘控制机器人之前降低速度命令！随时准备好您的遥控器来接管控制。  
 
     发布错误的Twist速度消息可能使机器人以最快速度运行，你可以随时准备好您的遥控器来接管控制。
-

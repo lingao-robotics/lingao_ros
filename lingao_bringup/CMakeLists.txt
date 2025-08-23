@@ -1,52 +1,29 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(lingao_bringup)
 
-##################
-## Dependencies ##
-##################
+# Default to C99
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
+endif()
 
-## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++14)
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-#依赖包
-find_package(catkin REQUIRED COMPONENTS
-    roscpp 
-    rospy
-    sensor_msgs 
-)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
-###################################
-## catkin specific configuration ##
-###################################
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(lingao_base REQUIRED)
 
-catkin_package(
-  # INCLUDE_DIRS include
-  # LIBRARIES lingao_bringup
-  # CATKIN_DEPENDS roscpp tf2 tf2_ros
-)
+# msgs interfaces
+find_package(lingao_msgs REQUIRED)
 
-###########
-## Build ##
-###########
+install(DIRECTORY launch params
+  DESTINATION share/${PROJECT_NAME})
 
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-include_directories(
-  # include
-  ${catkin_INCLUDE_DIRS}
-)
-
-# flat_world_imu_node node
-add_executable(flat_world_imu_node src/flat_world_imu_node.cpp)
-add_dependencies(flat_world_imu_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(flat_world_imu_node  ${catkin_LIBRARIES})
-
-# flat_world_odom_node node
-add_executable(flat_world_odom_node src/flat_world_odom_node.cpp)
-add_dependencies(flat_world_odom_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(flat_world_odom_node  ${catkin_LIBRARIES})
-
-
+ament_package()
