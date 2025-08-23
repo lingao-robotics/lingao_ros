@@ -3,7 +3,7 @@
 该存储库是灵遨ROS机器人最小软件包集  
 当前版本协议：V3.1.0
 
-注意：如果是旧版本协议请切换到[V2.1.0分支](https://keaa.coding.net/public/lingaoros/lingao_ros/git/files/2.1.0)
+注意：如果是旧版本协议请切换到 ROS1[V2.1.0分支](../../tree/V2.1.0)
 
 ## ROS Packages
 * lingao_base: 灵遨底盘驱动软件包，用于ROS的底盘通讯收发
@@ -29,7 +29,7 @@
     $ mkdir -p ~/lingao_ws/src/
     $ cd ~/lingao_ws/src/
     $ catkin_init_workspace
-    $ git clone https://e.coding.net/keaa/lingaoros/lingao_ros.git
+    $ git clone -b ros1 https://github.com/lingao-robotics/lingao_ros.git
     $ catkin_make
     ```
 
@@ -53,7 +53,7 @@
     $ sudo cp 50-lingao.rules /etc/udev/rules.d/
     ``` 
 
-下位机通讯测试可[点击这里了解使用方式](http://www.elelab.net/rosserial-lower-computer-communication-test.html)
+下位机通讯测试可查看ROS2分支文档
 
 ## ROS Package 基本用法
 下面是lingao_bringup的启动包，有下面几种（未全列出
@@ -110,8 +110,3 @@
 
     发布错误的Twist速度消息可能使机器人以最快速度运行，你可以随时准备好您的遥控器来接管控制。
 
-
-## 问题Q&A  
-
-* 问：如何下载驱动包？  
-    答：使用GIT方式拉取即可：`git clone https://e.coding.net/keaa/lingaoros/lingao_ros.git`
