@@ -15,6 +15,8 @@ ARGUMENTS = [
                           description='Linear Velocity Calibration Scale'),
     DeclareLaunchArgument('angular_scale', default_value='1.0',
                           description='Angular velocity calibration scale'),
+    DeclareLaunchArgument('stamped_control', default_value='false',
+                          description='Subscribe cmd_vel as geometry_msgs/TwistStamped'),
     DeclareLaunchArgument("publish_imu", default_value='false',
                           description="Publish onboard imu"),
     DeclareLaunchArgument("odom_topic_remap", default_value="raw_odom",
@@ -38,6 +40,7 @@ def generate_launch_description():
             "pub_odom_tf": LaunchConfiguration("pub_odom_tf"),
             "linear_scale": LaunchConfiguration("linear_scale"),
             "angular_scale": LaunchConfiguration("angular_scale"),
+            "stamped_control": LaunchConfiguration("stamped_control"),
             "publish_imu": LaunchConfiguration("publish_imu"),
             "imu_frame_id": "imu_link",
             "imu_calibrate_gyro": True,
@@ -51,7 +54,6 @@ def generate_launch_description():
         ],
         )
 
-    return LaunchDescription([
-        LaunchDescription(ARGUMENTS),
+    return LaunchDescription(ARGUMENTS + [
         lingao_base_node
     ])

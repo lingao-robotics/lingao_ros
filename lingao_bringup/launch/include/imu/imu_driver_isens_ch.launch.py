@@ -57,8 +57,7 @@ def generate_launch_description():
          arguments=["0.15", "0", "0.32", "0", "0", "0", "base_link", "imu_link"],
     )
 
-    return LaunchDescription([
-        LaunchDescription(ARGUMENTS),
+    return LaunchDescription(ARGUMENTS + [
         tf2_miniugv_20a_3d_node,
         tf2_miniugv_20a_node,
         tf2_laugv_50a_node,

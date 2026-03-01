@@ -11,6 +11,8 @@ ARGUMENTS = [
                           description='set lingao mobile robot model'),
     DeclareLaunchArgument('imu_type', default_value='onboard_imu',
                           description='IMU Model'),
+    DeclareLaunchArgument('stamped_control', default_value='true',
+                        description='Use TwistStamped on cmd_vel'),
 ]
 
 def generate_launch_description():
@@ -25,24 +27,26 @@ def generate_launch_description():
         [pkg_lingao_bringup, 'launch/include', 'lingao_imu_driver.launch.py'])
 
     ekf_localization_yaml = PathJoinSubstitution(
-        [pkg_lingao_bringup, 'params/ekf_localization.yaml'])
+        [pkg_lingao_bringup, 'params', 'ekf_localization.yaml'])
 
     lingao_base_driver_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(lingao_base_driver_launch_file),
+        PythonLaunchDescriptionSource([lingao_base_driver_launch_file]),
         condition= LaunchConfigurationNotEquals('imu_type', 'onboard_imu'),
         launch_arguments={
-            'publish_imu': 'false'
+            'publish_imu': 'false',
+            'stamped_control': LaunchConfiguration('stamped_control')
         }.items())
 
     lingao_base_driver_imu_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(lingao_base_driver_launch_file),
+        PythonLaunchDescriptionSource([lingao_base_driver_launch_file]),
         condition= LaunchConfigurationEquals('imu_type', 'onboard_imu'),
         launch_arguments={
-            'publish_imu': 'true'
+            'publish_imu': 'true',
+            'stamped_control': LaunchConfiguration('stamped_control')
         }.items())
 
     lingao_imu_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(lingao_imu_launch_file),
+        PythonLaunchDescriptionSource([lingao_imu_launch_file]),
         launch_arguments={
             'chassis_model': LaunchConfiguration('chassis_model'),
             'imu_type': LaunchConfiguration('imu_type'),
@@ -55,19 +59,20 @@ def generate_launch_description():
         executable='ekf_node',
         name='ekf_filter_node',
         output='screen',
-        parameters=[PathJoinSubstitution(ekf_localization_yaml)],
+        parameters=[ekf_localization_yaml],
         remappings=[
             ("/odometry/filtered", "/odom"),
         ],)
 
     lingao_description_launch = IncludeLaunchDescription(
-        PathJoinSubstitution([pkg_lingao_description, 'launch', 'description.launch.py']),
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([pkg_lingao_description, 'launch', 'description.launch.py'])
+        ]),
         launch_arguments={
             # 'chassis_model': 'MiniUGV-10A'
         }.items())
 
-    return LaunchDescription([
-        LaunchDescription(ARGUMENTS),
+    return LaunchDescription(ARGUMENTS + [
         lingao_description_launch,
         lingao_base_driver_launch,
         lingao_base_driver_imu_launch,

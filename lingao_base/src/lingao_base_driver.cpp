@@ -37,6 +37,7 @@ void LingAoBaseDriver::GetParameters()
     ROS2_READ_PARAM(std::string,    "base_frame_id",        (base_frame_id_),       "base_link");
     ROS2_READ_PARAM(bool,           "pub_odom_tf",          (pub_odom_tf_),         false);
     ROS2_READ_PARAM(double,         "cmd_vel_sub_timeout",  (cmd_vel_sub_timeout_),  2.0);
+    ROS2_READ_PARAM(bool,           "stamped_control",      (stamped_control_),     false);
 
     ROS2_READ_PARAM(double,         "linear_scale",         (linear_scale_),        1.0);
     ROS2_READ_PARAM(double,         "angular_scale",        (angular_scale_),       1.0);
@@ -155,7 +156,17 @@ void LingAoBaseDriver::PublishSensor10HzLoopCallback()
 
 void LingAoBaseDriver::CmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr twisPtr) 
 {
-    cmd_vel_.set(twisPtr->linear.x, twisPtr->linear.y, twisPtr->angular.z);
+    ApplyCmdVel(*twisPtr);
+}
+
+void LingAoBaseDriver::CmdVelStampedCallback(const geometry_msgs::msg::TwistStamped::SharedPtr twisStampedPtr)
+{
+    ApplyCmdVel(twisStampedPtr->twist);
+}
+
+void LingAoBaseDriver::ApplyCmdVel(const geometry_msgs::msg::Twist &twist)
+{
+    cmd_vel_.set(twist.linear.x, twist.linear.y, twist.angular.z);
     cmd_vel_sub_timeout_timer_->reset();
 }
 
@@ -302,7 +313,18 @@ LingAoBaseDriver::LingAoBaseDriver() : Node("lingao_base_driver")
     }
 
     // setup subscribers
-    cmd_vel_subscriber_ = this->create_subscription<geometry_msgs::msg::Twist>("~/cmd_vel", 5, std::bind(&LingAoBaseDriver::CmdVelCallback, this, _1));
+    if (stamped_control_)
+    {
+        cmd_vel_stamped_subscriber_ = this->create_subscription<geometry_msgs::msg::TwistStamped>(
+            "~/cmd_vel", 5, std::bind(&LingAoBaseDriver::CmdVelStampedCallback, this, _1));
+        RCLCPP_INFO_STREAM(this->get_logger(), "cmd_vel message type: geometry_msgs/msg/TwistStamped");
+    }
+    else
+    {
+        cmd_vel_subscriber_ = this->create_subscription<geometry_msgs::msg::Twist>(
+            "~/cmd_vel", 5, std::bind(&LingAoBaseDriver::CmdVelCallback, this, _1));
+        RCLCPP_INFO_STREAM(this->get_logger(), "cmd_vel message type: geometry_msgs/msg/Twist");
+    }
 
     // setup publishers
     odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("~/odom", rclcpp::SensorDataQoS());

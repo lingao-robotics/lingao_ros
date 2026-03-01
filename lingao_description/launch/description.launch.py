@@ -38,8 +38,7 @@ def generate_launch_description():
         executable='joint_state_publisher',
     )
 
-    return LaunchDescription([
-        LaunchDescription(ARGUMENTS),
+    return LaunchDescription(ARGUMENTS + [
         OpaqueFunction(function=evaluate_xacro),
         joint_state_publisher_node
     ])

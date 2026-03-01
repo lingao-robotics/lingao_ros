@@ -39,6 +39,7 @@ ros2 launch lingao_base lingao_base_driver.launch.py
 ## 订阅的话题
 /cmd_vel ([geometry_msgs/msg/Twist](https://docs.ros2.org/latest/api/geometry_msgs/msg/Twist.html))
 - 控制机器人平移线速度(单位:m/s)和旋转角速度(单位:rad/s)
+- 支持通过参数切换为 [geometry_msgs/msg/TwistStamped](https://docs.ros2.org/latest/api/geometry_msgs/msg/TwistStamped.html)
 
 
 ## 服务话题
@@ -64,6 +65,8 @@ ros2 launch lingao_base lingao_base_driver.launch.py
     是否发布板载imu信息
 - ~cmd_vel_sub_timeout (double, default: 1.0)  
     接收cmd_vel超时时间，超时后速度置0
+- ~stamped_control (bool, default: false)  
+    `false` 时订阅 `geometry_msgs/msg/Twist`；`true` 时订阅 `geometry_msgs/msg/TwistStamped`
 - ~imu_calibrate_gyro (string, default: true)  
     是否校准陀螺仪
 - ~imu_cailb_samples (int, default: 300)  

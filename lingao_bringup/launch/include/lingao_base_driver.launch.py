@@ -6,6 +6,11 @@ from ament_index_python.packages import get_package_share_directory
 
 ARGUMENTS = [
     DeclareLaunchArgument('publish_imu', default_value='false', description='Publish IMU'),
+    DeclareLaunchArgument(
+        'stamped_control',
+        default_value='false',
+        description='Use TwistStamped on cmd_vel',
+    ),
 ]
 
 def generate_launch_description():
@@ -21,11 +26,11 @@ def generate_launch_description():
             'publish_imu': LaunchConfiguration('publish_imu'),
             'pub_odom_tf': 'false',
             'linear_scale': '1.0',
-            'angular_scale': '1.0'
+            'angular_scale': '1.0',
+            'stamped_control': LaunchConfiguration('stamped_control'),
         }.items())
 
-    return LaunchDescription([
-        LaunchDescription(ARGUMENTS),
+    return LaunchDescription(ARGUMENTS + [
         lingao_base_driver_launch
     ])
     

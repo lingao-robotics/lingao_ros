@@ -23,25 +23,24 @@ def generate_launch_description():
 
     lingao_lidar_launch_file = PathJoinSubstitution(
         [pkg_lingao_bringup, 'launch/include', 'lingao_lidar_driver.launch.py'])
-    
+
     lingao_bringup_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(lingao_bringup_launch_file),
+        PythonLaunchDescriptionSource([lingao_bringup_launch_file]),
         launch_arguments={
             'chassis_model': lingao_chassis_model,
             'imu_type': lingao_imu_type,
         }.items())
-    
+
     lingao_lidar_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(lingao_lidar_launch_file),
+        PythonLaunchDescriptionSource([lingao_lidar_launch_file]),
         launch_arguments={
             'chassis_model': lingao_chassis_model,
             'lidar_type': lingao_lidar_type,
-            'topic_name': 'scan',
-            'frame_id': 'laser_link',
+            'lidar_topic_name': 'scan',
+            'lidar_frame_id': 'laser_link',
         }.items())
 
     return LaunchDescription([
         lingao_bringup_launch,
         lingao_lidar_launch
     ])
-    

@@ -24,14 +24,13 @@ def generate_launch_description():
         [pkg_lingao_bringup, 'launch/include/imu/'])
     
     imu_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([imu_launch_dir, 'imu_driver_', LaunchConfiguration('imu_type'), '.launch.py']),
+        PythonLaunchDescriptionSource([imu_launch_dir, '/imu_driver_', LaunchConfiguration('imu_type'), '.launch.py']),
         launch_arguments={
             'chassis_model': LaunchConfiguration('chassis_model'),
             'imu_topic_name': LaunchConfiguration('imu_topic_name'),
             'imu_frame_id': LaunchConfiguration('imu_frame_id')
         }.items())
     
-    return LaunchDescription([
-        LaunchDescription(ARGUMENTS),
+    return LaunchDescription(ARGUMENTS + [
         imu_launch
     ])

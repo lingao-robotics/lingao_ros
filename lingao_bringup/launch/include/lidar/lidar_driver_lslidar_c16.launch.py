@@ -40,8 +40,7 @@ def generate_launch_description():
         arguments=["0.0525", "0", "0.354", "0", "0", "0", "base_link", "laser_link"],
     )
 
-    return LaunchDescription([
-        LaunchDescription(ARGUMENTS),
+    return LaunchDescription(ARGUMENTS + [
         lslidar_node,
         tf2_miniugv_20a_3d_node
     ])

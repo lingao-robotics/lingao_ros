@@ -17,6 +17,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include <tf2_ros/transform_broadcaster.h>
 #include <geometry_msgs/msg/twist.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <lingao_msgs/msg/chassis_status.hpp>
@@ -41,6 +42,7 @@ private:
     double angular_scale_;
     bool pub_odom_tf_;
     double cmd_vel_sub_timeout_;
+    bool stamped_control_;
 
     std::string imu_frame_id_;
     bool use_imu_;
@@ -49,6 +51,7 @@ private:
 
     // Subscribers Messages
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_subscriber_;
+    rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr cmd_vel_stamped_subscriber_;
 
     // Publishers Messages
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
@@ -77,7 +80,9 @@ private:
 
     void GetParameters();
     nav_msgs::msg::Odometry CalculateOdometry(geometry_msgs::msg::Twist &robot_twist);
+    void ApplyCmdVel(const geometry_msgs::msg::Twist &twist);
     void CmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr twisPtr);
+    void CmdVelStampedCallback(const geometry_msgs::msg::TwistStamped::SharedPtr twisStampedPtr);
     void SoundLightCtrlCallBack(const lingao_msgs::srv::SoundLightControl_Request::SharedPtr req,
                             const lingao_msgs::srv::SoundLightControl_Response::SharedPtr res);
     void PublishOdomLoopCallback();

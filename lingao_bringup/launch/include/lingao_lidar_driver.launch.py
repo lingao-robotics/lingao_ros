@@ -15,6 +15,7 @@ ARGUMENTS = [
                           description='Lidar frame id'),
 ]
 
+
 def generate_launch_description():
 
     pkg_lingao_bringup = get_package_share_directory('lingao_bringup')
@@ -22,16 +23,15 @@ def generate_launch_description():
     # Launch files
     lidar_launch_dir = PathJoinSubstitution(
         [pkg_lingao_bringup, 'launch/include/lidar/'])
-    
+
     imu_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([lidar_launch_dir, 'lidar_driver_' ,LaunchConfiguration('lidar_type'),'.launch.py']),
+        PythonLaunchDescriptionSource([lidar_launch_dir, '/lidar_driver_' ,LaunchConfiguration('lidar_type'),'.launch.py']),
         launch_arguments={
             'chassis_model': LaunchConfiguration('chassis_model'),
-            'topic_name': LaunchConfiguration('lidar_topic_name'),
-            'frame_id': LaunchConfiguration('lidar_frame_id'),
+            'lidar_topic_name': LaunchConfiguration('lidar_topic_name'),
+            'lidar_frame_id': LaunchConfiguration('lidar_frame_id'),
         }.items())
 
-    return LaunchDescription([
-        LaunchDescription(ARGUMENTS),
+    return LaunchDescription(ARGUMENTS + [
         imu_launch
     ])
